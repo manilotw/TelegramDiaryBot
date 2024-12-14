@@ -7,15 +7,21 @@ from .models import (
     Mark,
     Chastisement,
     Commendation,
-    Parent
+    Parent,
+    Homework
 )
 
 
 @admin.register(Schoolkid)
 class SchoolkidAdmin(admin.ModelAdmin):
-    list_display = ('full_name', 'year_of_study', 'group_letter', 'entry_year', 'birthday')
+    list_display = ('full_name', 'group_letter', 'birthday', 'get_parent')
     search_fields = ('full_name', 'group_letter')
-    list_filter = ('year_of_study', 'group_letter')
+    list_filter = ('group_letter',)
+    ordering = ('group_letter',)
+
+    def get_parent(self, obj):
+        return ", ".join([parent.full_name for parent in obj.parents.all()])
+    get_parent.short_description = 'Родители'
 
 
 @admin.register(Teacher)
@@ -26,23 +32,22 @@ class TeacherAdmin(admin.ModelAdmin):
 
 @admin.register(Subject)
 class SubjectAdmin(admin.ModelAdmin):
-    list_display = ('title', 'year_of_study')
+    list_display = ('title',)
     search_fields = ('title',)
-    list_filter = ('year_of_study',)
 
 
 @admin.register(Lesson)
 class LessonAdmin(admin.ModelAdmin):
-    list_display = ('subject', 'teacher', 'year_of_study', 'group_letter', 'date', 'timeslot', 'room')
+    list_display = ('subject', 'teacher', 'group_letter', 'date', 'timeslot', 'room')
     search_fields = ('subject__title', 'teacher__full_name', 'room')
-    list_filter = ('year_of_study', 'group_letter', 'date', 'timeslot')
+    list_filter = ('group_letter', 'date', 'timeslot')
 
 
 @admin.register(Mark)
 class MarkAdmin(admin.ModelAdmin):
     list_display = ('points', 'schoolkid', 'subject', 'teacher', 'created')
-    search_fields = ('schoolkid__full_name', 'subject__title', 'teacher__full_name')
-    list_filter = ('points', 'created')
+    search_fields = ('schoolkid__full_name', 'subject__title')
+    list_filter = ('subject', 'points')
 
 
 @admin.register(Chastisement)
@@ -58,7 +63,19 @@ class CommendationAdmin(admin.ModelAdmin):
     search_fields = ('schoolkid__full_name', 'text', 'subject__title', 'teacher__full_name')
     list_filter = ('created',)
 
+
 @admin.register(Parent)
 class ParentAdmin(admin.ModelAdmin):
-    list_display = ('full_name', 'phone_number', 'email', 'telegram_id')
+    list_display = ('full_name', 'phone_number', 'email', 'telegram_id', 'get_children')
     search_fields = ('full_name', 'phone_number', 'email', 'telegram_id')
+
+    def get_children(self, obj):
+        return ", ".join([child.full_name for child in obj.children.all()])
+    get_children.short_description = 'Дети'
+
+
+@admin.register(Homework)
+class HomeworkAdmin(admin.ModelAdmin):
+    list_display = ('title', 'subject', 'group_letter', 'due_date')
+    search_fields = ('title', 'subject__title', 'group_letter')
+    list_filter = ('due_date', 'group_letter')
