@@ -11,7 +11,7 @@ django.setup()
 
 # Настройка Django
 # from .models import Schoolkid, Parent, Teacher, Subject, Lesson, Mark, Chastisement, Commendation
-from .utils import get_chastisements, get_about_me, get_commendations, get_events, get_homework, get_marks, get_user_role
+from .utils import get_chastisements, get_about_me, get_commendations, get_events, get_homework, get_marks, get_user_role, get_scedule
 from .helpers import chastisements, about_me, about_bot, lesson_schedule, homework, marks, commendations, create_reply_keyboard, events, teacher_beta, without_role_beta
 
 
@@ -81,6 +81,11 @@ def main():
     def beta_teacher(message):
         result = 'Информация про нашу иновационную школу появиться скоро!'
         bot.send_message(message.chat.id, result)    
+
+    @bot.message_handler(func=lesson_schedule)
+    def send_schedule(message):
+        result = get_scedule(f'@{message.chat.username}')
+        bot.send_message(message.chat.id)
 
 if __name__ == "__main__":
     main()

@@ -36,19 +36,19 @@ def create_reply_keyboard(role):
     
     keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
     
-    if role == 'teacher':
+    if role == 'schoolkid':
         btn1 = KeyboardButton('О боте')
         btn2 = KeyboardButton('О себе')
         btn3 = KeyboardButton('Расписание')
         btn4 = KeyboardButton('События')
-        btn5 = KeyboardButton('Добавить жалобу')
-        btn6 = KeyboardButton('Добавить похвалу')
-        btn7 = KeyboardButton('Добавить Д/З')
-        btn8 = KeyboardButton('Добавить оценку')
+        btn5 = KeyboardButton('Замечания')
+        btn6 = KeyboardButton('Похвалы')
+        btn7 = KeyboardButton('Домашние задания')
+        btn8 = KeyboardButton('Оценки')
 
         keyboard.add(btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8)
 
-    elif role == 'schoolkid':
+    elif role == 'teacher':
 
         btn1 = KeyboardButton('Я учитель')
         
@@ -60,8 +60,3 @@ def create_reply_keyboard(role):
 
     return keyboard
     
-
-# расписание
-# домашнее задание
-# оценки, замечания, похвалы
-# напоминания

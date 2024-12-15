@@ -118,7 +118,7 @@ def get_homework(tg_id):
         schoolkid = get_object_or_404(Schoolkid, telegram_id=tg_id)
     
         homeworks = Homework.objects.filter(class_group=schoolkid.class_group)
-        if not homework:
+        if not homeworks:
             return 'Похоже вам не задали ничего, отдыхайте!'
         result = 'Ваше домашнее задание\n\n'
 
@@ -130,6 +130,24 @@ def get_homework(tg_id):
         return result
     except:
         return 'Похоже бот слетел...Уведомите об этом разработчиков Амиржана и Адилета!'
+
+def get_scedule(tg_id):
+    try:
+        schoolkid = get_object_or_404(Schoolkid, telegram_id=tg_id)
+    
+        schedule = get_object_or_404(Lesson, class_group=schoolkid.class_group)
+        if not schedule:
+            return 'У вас завтра нет уроков.'
+        result = 'Ваше расписание на сегодня\n\n'
+        num = 0
+        for subject in schedule.subjects.all():
+            result+=f'{num} урок {subject.title}\n'
+            num+=1
+            
+        return result
+    except:
+        return 'Похоже бот слетел...Уведомите об этом разработчиков Амиржана и Адилета!'
+
 
 
         
