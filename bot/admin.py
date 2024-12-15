@@ -41,14 +41,14 @@ class SubjectAdmin(admin.ModelAdmin):
 
 @admin.register(Lesson)
 class LessonAdmin(admin.ModelAdmin):
-    list_display = ('class_group', 'get_subjects')
+    list_display = ('class_group', 'get_subjects', )
     search_fields = ('class_group', 'subjects__title')
 
     def get_subjects(self, obj):
         return ', '.join([subject.title for subject in obj.subjects.all()])
     get_subjects.short_description = 'Предметы'
 
-    filter_horizontal = ('subjects', )  # This adds a horizontal filter for many-to-many fields
+    filter_horizontal = ('subjects',)  # This adds a horizontal filter for many-to-many fields
 
 
 @admin.register(Mark)
@@ -94,16 +94,14 @@ class HomeworkAdmin(admin.ModelAdmin):
 
 @admin.register(ClassGroup)
 class ClassGroupAdmin(admin.ModelAdmin):
-    """Админка для классов."""
-    list_display = ('year', 'letter', 'teacher', 'get_student_count')
-    search_fields = ('year', 'letter', 'teacher__full_name')
-    list_filter = ('year', 'letter')
-    ordering = ('year', 'letter')
+    list_display = ('year', 'letter', 'teacher', 'get_students')  # Добавляем метод для отображения учеников
 
-    def get_student_count(self, obj):
-        """Количество учеников в классе."""
-        return obj.students.count()
-    get_student_count.short_description = 'Количество учеников'
+    def get_students(self, obj):
+        """Метод для отображения учеников класса."""
+        students = obj.students.all()  # Получаем всех учеников этого класса
+        return ', '.join([student.full_name for student in students])  # Возвращаем имена учеников
+
+    get_students.short_description = 'Ученики'  # Название столбца
 
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):

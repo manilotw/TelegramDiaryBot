@@ -97,7 +97,7 @@ class Lesson(models.Model):
 
     def __str__(self):
         subject_titles = ', '.join([subject.title for subject in self.subjects.all()])
-        return f'{self.class_group} | {subject_titles}'
+        return f'{self.class_group} | {subject_titles} '
 
     class Meta:
         verbose_name = 'Урок'
