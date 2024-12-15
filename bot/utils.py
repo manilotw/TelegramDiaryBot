@@ -1,8 +1,7 @@
-from .models import Schoolkid, Parent, Teacher, Subject, Lesson, Mark, Chastisement, Commendation, Event, Homework, ClassGroup
-import django
-import os
+from .models import Schoolkid, Teacher, Lesson, Mark, Chastisement, Commendation, Event, Homework
+
 from django.shortcuts import get_object_or_404
-from datetime import datetime
+
 
 def get_user_role(tg_id):
     try:

@@ -2,7 +2,6 @@ import os
 import sys
 import django
 from telebot import TeleBot
-from telebot.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup
 from environs import Env
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
