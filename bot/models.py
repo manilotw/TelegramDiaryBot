@@ -83,30 +83,49 @@ class Lesson(models.Model):
         '10:35-11:15',
         '11:25-12:05'
     ]
-    group_letter = models.CharField('Литера класса', max_length=1, db_index=True)
     subject = models.ForeignKey(
-        Subject,
+        'Subject',
         null=True,
         verbose_name='Предмет',
-        on_delete=models.CASCADE)
+        on_delete=models.CASCADE
+    )
     teacher = models.ForeignKey(
-        Teacher,
+        'Teacher',
         null=True,
         verbose_name='Учитель',
-        on_delete=models.CASCADE)
+        on_delete=models.CASCADE
+    )
+    class_group = models.ForeignKey(
+        'ClassGroup',
+        null=True,
+        verbose_name='Класс',
+        on_delete=models.CASCADE
+    )
     timeslot = models.IntegerField(
         'Слот',
         db_index=True,
-        help_text='Номер слота в расписании уроков на этот день.')
+        help_text='Номер слота в расписании уроков на этот день.'
+    )
     room = models.CharField(
-        'Класс',
+        'Кабинет',
         db_index=True,
         max_length=50,
-        help_text='Класс где проходят занятия.')
-    date = models.DateField('Дата', db_index=True)
+        help_text='Кабинет, где проходят занятия.'
+    )
+    datetime = models.DateTimeField(
+        'Дата и время',
+        db_index=True,
+        help_text='Дата и время начала урока.',
+        null=True  # Temporarily allow NULL values
+
+    )
 
     def __str__(self):
-        return f'{self.subject.title} {self.group_letter}'
+        return f'{self.datetime} | {self.class_group} | {self.subject.title} | {self.teacher}'
+
+    class Meta:
+        verbose_name = 'Урок'
+        verbose_name_plural = 'Уроки'
 
 
 class Mark(models.Model):
@@ -226,3 +245,39 @@ class Homework(models.Model):
     class Meta:
         verbose_name = 'Домашнее задание'
         verbose_name_plural = 'Домашние задания'
+
+class Event(models.Model):
+    """Модель для представления события (мероприятия)."""
+    title = models.CharField(
+        'Название события',
+        max_length=200,
+        help_text='Краткое название мероприятия.'
+    )
+    description = models.TextField(
+        'Описание события',
+        blank=True,
+        help_text='Описание мероприятия, например, тематика или цель.'
+    )
+    datetime = models.DateTimeField(
+        'Дата и время',
+        help_text='Дата и время начала события.'
+    )
+    location = models.CharField(
+        'Место проведения',
+        max_length=200,
+        help_text='Где будет проходить мероприятие (например, актовый зал).'
+    )
+    class_group = models.ManyToManyField(
+        'ClassGroup',
+        verbose_name='Классы',
+        blank=True,
+        help_text='Классы, которые участвуют в мероприятии.'
+    )
+
+    def __str__(self):
+        return f'{self.title} | {self.datetime} | {self.location}'
+
+    class Meta:
+        verbose_name = 'Событие'
+        verbose_name_plural = 'События'
+        ordering = ['datetime']

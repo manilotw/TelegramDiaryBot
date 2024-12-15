@@ -9,7 +9,8 @@ from .models import (
     Commendation,
     Parent,
     Homework,
-    ClassGroup
+    ClassGroup,
+    Event
 
 )
 
@@ -40,9 +41,12 @@ class SubjectAdmin(admin.ModelAdmin):
 
 @admin.register(Lesson)
 class LessonAdmin(admin.ModelAdmin):
-    list_display = ('subject', 'teacher', 'group_letter', 'date', 'timeslot', 'room')
-    search_fields = ('subject__title', 'teacher__full_name', 'room')
-    list_filter = ('group_letter', 'date', 'timeslot')
+    """Админка для модели Lesson (Урок)."""
+    list_display = ('datetime', 'class_group', 'subject', 'teacher', 'room', 'timeslot')
+    list_filter = ('datetime', 'class_group', 'subject', 'teacher', 'room', 'timeslot')
+    search_fields = ('subject__title', 'teacher__name', 'room', 'class_group__year', 'class_group__letter')
+    ordering = ('datetime', 'timeslot')
+    date_hierarchy = 'datetime'  # Удобная навигация по датам
 
 
 @admin.register(Mark)
@@ -98,5 +102,13 @@ class ClassGroupAdmin(admin.ModelAdmin):
         """Количество учеников в классе."""
         return obj.students.count()
     get_student_count.short_description = 'Количество учеников'
+
+@admin.register(Event)
+class EventAdmin(admin.ModelAdmin):
+    """Админка для модели Event (Событие)."""
+    list_display = ('title', 'datetime', 'location')
+    list_filter = ('datetime', 'location', 'class_group')
+    search_fields = ('title', 'location', 'class_group__year', 'class_group__letter')
+    ordering = ('datetime',)
 
 
