@@ -14,10 +14,10 @@ from .models import (
 
 @admin.register(Schoolkid)
 class SchoolkidAdmin(admin.ModelAdmin):
-    list_display = ('full_name', 'group_letter', 'birthday', 'get_parent')
-    search_fields = ('full_name', 'group_letter')
-    list_filter = ('group_letter',)
-    ordering = ('group_letter',)
+    list_display = ('full_name', 'class_name', 'birthday', 'get_parent')
+    search_fields = ('full_name', 'class_name')
+    list_filter = ('class_name',)
+    ordering = ('class_name',)
 
     def get_parent(self, obj):
         return ", ".join([parent.full_name for parent in obj.parents.all()])

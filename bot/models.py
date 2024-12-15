@@ -21,14 +21,14 @@ class Schoolkid(models.Model):
     full_name = models.CharField('ФИО', max_length=200)
     birthday = models.DateField('День рождения', null=True)
     entry_year = models.IntegerField('Год начала обучения', null=True)
-    group_letter = models.CharField('Литера класса', max_length=1, blank=True)
+    class_name = models.CharField('Класс', max_length=10, blank=True)  # Новое поле
     telegram_id = models.CharField('Telegram ID', max_length=100, default='', blank=True)
 
     # Связь с родителями
     parents = models.ManyToManyField('Parent', verbose_name='Родители', related_name='children', blank=True)
 
     def __str__(self):
-        return f'{self.full_name} {self.group_letter}'
+        return f'{self.full_name} {self.class_name}'
 
     class Meta:
         verbose_name = 'Ученик'
@@ -45,6 +45,7 @@ class Schoolkid(models.Model):
         """Статистика оценок по предметам."""
         marks = Mark.objects.filter(schoolkid=self)
         return marks.values('subject__title').annotate(average=models.Avg('points'))
+
 
 
 class Teacher(models.Model):
