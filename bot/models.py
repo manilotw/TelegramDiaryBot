@@ -30,6 +30,14 @@ class Schoolkid(models.Model):
     def __str__(self):
         return f'{self.full_name} {self.class_name}'
 
+    class_group = models.ForeignKey(
+        'ClassGroup',
+        verbose_name='Класс',
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='students'
+    )
+
     class Meta:
         verbose_name = 'Ученик'
         verbose_name_plural = 'Ученики'
@@ -166,6 +174,25 @@ class Commendation(models.Model):
     def __str__(self):
         return f'{self.schoolkid.full_name}'
 
+class ClassGroup(models.Model):
+    """Модель для представления классов, например, 11А, 10Б."""
+    year = models.IntegerField('Год обучения')  # Например, 10, 11
+    letter = models.CharField('Литера', max_length=1)  # Например, А, Б
+    teacher = models.ForeignKey(
+        'Teacher',
+        verbose_name='Классный руководитель',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL
+    )
+
+    def __str__(self):
+        return f'{self.year}{self.letter}'
+
+    class Meta:
+        verbose_name = 'Класс'
+        verbose_name_plural = 'Классы'
+        unique_together = ('year', 'letter')  # Уникальность класса (например, 10А)
 
 class Homework(models.Model):
     """Домашнее задание."""
@@ -177,9 +204,11 @@ class Homework(models.Model):
         verbose_name='Предмет',
         on_delete=models.CASCADE
     )
-    group_letter = models.CharField(
-        'Литера класса',
-        max_length=1,
+    class_group = models.ForeignKey(
+        'ClassGroup',
+        verbose_name='Класс',
+        on_delete=models.CASCADE,
+        null=True,
         blank=True,
         help_text='Класс, которому назначено задание'
     )
@@ -192,7 +221,7 @@ class Homework(models.Model):
     )
 
     def __str__(self):
-        return f'{self.title} - {self.subject.title}'
+        return f'{self.title} - {self.subject.title} ({self.class_group})'
 
     class Meta:
         verbose_name = 'Домашнее задание'
