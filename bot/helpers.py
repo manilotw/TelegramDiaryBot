@@ -26,6 +26,12 @@ def commendations(message):
 def chastisements(message):
     return message.text == 'Замечания'
 
+def teacher_beta(message):
+    return message.text == 'Я учитель'
+
+def without_role_beta(message):
+    return message.text == 'Узнать про школу'
+
 def create_reply_keyboard(role):
     
     keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
@@ -44,16 +50,9 @@ def create_reply_keyboard(role):
 
     elif role == 'schoolkid':
 
-        btn1 = KeyboardButton('О боте')
-        btn2 = KeyboardButton('О себе')
-        btn3 = KeyboardButton('Расписание')
-        btn4 = KeyboardButton('События')
-        btn5 = KeyboardButton('Замечания')
-        btn6 = KeyboardButton('Похвалы')
-        btn7 = KeyboardButton('Домашние задания')
-        btn8 = KeyboardButton('Оценки')
-
-        keyboard.add(btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8)
+        btn1 = KeyboardButton('Я учитель')
+        
+        keyboard.add(btn1)
 
     else:
 
