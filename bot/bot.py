@@ -81,7 +81,7 @@ def main():
     @bot.message_handler(func=lesson_schedule)
     def send_schedule(message):
         result = get_scedule(f'@{message.chat.username}')
-        bot.send_message(message.chat.id)
+        bot.send_message(message.chat.id, result)
 
 if __name__ == "__main__":
     main()

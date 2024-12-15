@@ -118,7 +118,7 @@ def get_marks(tg_id):
         if not marks:
             return 'у вас нет оценок, учите уроки!'
         for mark in marks:
-            result += f'Оценка: {mark.points}]\n'
+            result += f'Оценка: {mark.points}\n'
             result += f'Учитель: {mark.teacher}\n'
             result += f'Комментарий: {mark.teacher_note}\n'
             result += f'Предмет: {mark.subject}\n'
@@ -160,7 +160,7 @@ def get_scedule(tg_id):
         if not schedule:
             return 'У вас завтра нет уроков.'
         result = 'Ваше расписание на сегодня\n\n'
-        num = 0
+        num = 1
         for subject in schedule.subjects.all():
             result += f'{num} урок {subject.title}\n'
             num += 1
