@@ -21,6 +21,8 @@ class SchoolkidAdmin(admin.ModelAdmin):
     search_fields = ('full_name', 'class_group__year', 'class_group__letter')
     list_filter = ('class_group__year', 'class_group__letter')
     ordering = ('class_group__year', 'class_group__letter', 'full_name')
+    filter_horizontal = ('parents',)  # Для удобного выбора родителей через интерфейс
+
 
     def get_parent(self, obj):
         return ", ".join([parent.full_name for parent in obj.parents.all()])

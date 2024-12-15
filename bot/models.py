@@ -1,6 +1,8 @@
 from django.db import models
 
 
+from django.db import models
+
 class Parent(models.Model):
     """Родитель."""
     full_name = models.CharField('ФИО', max_length=200)
@@ -24,7 +26,7 @@ class Schoolkid(models.Model):
     telegram_id = models.CharField('Telegram ID', max_length=100, default='', blank=True)
 
     # Связь с родителями
-    parents = models.ManyToManyField('Parent', verbose_name='Родители', related_name='children', blank=True)
+    parents = models.ManyToManyField(Parent, verbose_name='Родители', related_name='children', blank=True)
 
     def __str__(self):
         return f'{self.full_name} {self.class_name}'
@@ -73,7 +75,6 @@ class Subject(models.Model):
         return self.title
 
 
-from django.db import models
 
 class Lesson(models.Model):
     """Один урок в расписании занятий."""
