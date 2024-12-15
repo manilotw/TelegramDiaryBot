@@ -4,12 +4,11 @@ import django
 from telebot import TeleBot
 from environs import Env
 
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'diary_bot.settings')
 django.setup()
 
-# Настройка Django
-# from .models import Schoolkid, Parent, Teacher, Subject, Lesson, Mark, Chastisement, Commendation
 from .utils import get_chastisements, get_about_me, get_commendations, get_events, get_homework, get_marks, get_user_role, get_scedule
 from .helpers import chastisements, about_me, about_bot, lesson_schedule, homework, marks, commendations, create_reply_keyboard, events, teacher_beta, without_role_beta
 
@@ -19,8 +18,6 @@ env.read_env()
 
 TELEGRAM_BOT_TOKEN = env.str('BOT_TOKEN')
 bot = TeleBot(TELEGRAM_BOT_TOKEN)
-
-
 
 def main():
 

@@ -1,5 +1,6 @@
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup
 
+
 user_states = {}
 
 def about_bot(message):
@@ -37,6 +38,7 @@ def create_reply_keyboard(role):
     keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
     
     if role == 'schoolkid':
+        
         btn1 = KeyboardButton('О боте')
         btn2 = KeyboardButton('О себе')
         btn3 = KeyboardButton('Расписание')
