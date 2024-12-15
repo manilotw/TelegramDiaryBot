@@ -20,7 +20,6 @@ class Schoolkid(models.Model):
     """Ученик."""
     full_name = models.CharField('ФИО', max_length=200)
     birthday = models.DateField('День рождения', null=True)
-    entry_year = models.IntegerField('Год начала обучения', null=True)
     class_name = models.CharField('Класс', max_length=10, blank=True)  # Новое поле
     telegram_id = models.CharField('Telegram ID', max_length=100, default='', blank=True)
 
@@ -74,58 +73,37 @@ class Subject(models.Model):
         return self.title
 
 
+from django.db import models
+
 class Lesson(models.Model):
     """Один урок в расписании занятий."""
-    TIMESLOTS_SCHEDULE = [
-        '8:00-8:40',
-        '8:50-9:30',
-        '9:40-10:20',
-        '10:35-11:15',
-        '11:25-12:05'
-    ]
-    subject = models.ForeignKey(
-        'Subject',
-        null=True,
-        verbose_name='Предмет',
-        on_delete=models.CASCADE
-    )
-    teacher = models.ForeignKey(
-        'Teacher',
-        null=True,
-        verbose_name='Учитель',
-        on_delete=models.CASCADE
-    )
+
+    # Класс, которому назначен урок
     class_group = models.ForeignKey(
         'ClassGroup',
         null=True,
         verbose_name='Класс',
         on_delete=models.CASCADE
     )
-    timeslot = models.IntegerField(
-        'Слот',
-        db_index=True,
-        help_text='Номер слота в расписании уроков на этот день.'
-    )
-    room = models.CharField(
-        'Кабинет',
-        db_index=True,
-        max_length=50,
-        help_text='Кабинет, где проходят занятия.'
-    )
-    datetime = models.DateTimeField(
-        'Дата и время',
-        db_index=True,
-        help_text='Дата и время начала урока.',
-        null=True  # Temporarily allow NULL values
 
+    # Позволяет выбрать несколько предметов для урока
+    subjects = models.ManyToManyField(
+        'Subject',  # Ссылка на модель Subject, которая хранит предметы
+        verbose_name='Предметы',
+        related_name='lessons',
+        help_text='Предметы, которые будут изучаться на этом уроке.'
     )
+
 
     def __str__(self):
-        return f'{self.datetime} | {self.class_group} | {self.subject.title} | {self.teacher}'
+        subject_titles = ', '.join([subject.title for subject in self.subjects.all()])
+        return f'{self.class_group} | {subject_titles}'
 
     class Meta:
         verbose_name = 'Урок'
         verbose_name_plural = 'Уроки'
+
+
 
 
 class Mark(models.Model):

@@ -41,12 +41,14 @@ class SubjectAdmin(admin.ModelAdmin):
 
 @admin.register(Lesson)
 class LessonAdmin(admin.ModelAdmin):
-    """Админка для модели Lesson (Урок)."""
-    list_display = ('datetime', 'class_group', 'subject', 'teacher', 'room', 'timeslot')
-    list_filter = ('datetime', 'class_group', 'subject', 'teacher', 'room', 'timeslot')
-    search_fields = ('subject__title', 'teacher__name', 'room', 'class_group__year', 'class_group__letter')
-    ordering = ('datetime', 'timeslot')
-    date_hierarchy = 'datetime'  # Удобная навигация по датам
+    list_display = ('class_group', 'get_subjects')
+    search_fields = ('class_group', 'subjects__title')
+
+    def get_subjects(self, obj):
+        return ', '.join([subject.title for subject in obj.subjects.all()])
+    get_subjects.short_description = 'Предметы'
+
+    filter_horizontal = ('subjects', )  # This adds a horizontal filter for many-to-many fields
 
 
 @admin.register(Mark)
