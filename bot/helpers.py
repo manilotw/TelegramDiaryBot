@@ -12,10 +12,10 @@ def lesson_schedule(message):
     return message.text == 'Расписание'
 
 def homework(message):
-    return message.text == 'Домашнее задание'
+    return message.text == 'Домашние задания'
 
 def marks(message):
-    return message.text == 'Посмотреть оценки'
+    return message.text == 'Оценки'
 
 def events(message):
     return message.text == 'События'
@@ -48,7 +48,7 @@ def create_reply_keyboard(role):
         btn2 = KeyboardButton('О себе')
         btn3 = KeyboardButton('Расписание')
         btn4 = KeyboardButton('События')
-        btn5 = KeyboardButton('Жалобы')
+        btn5 = KeyboardButton('Замечания')
         btn6 = KeyboardButton('Похвалы')
         btn7 = KeyboardButton('Домашние задания')
         btn8 = KeyboardButton('Оценки')
@@ -66,4 +66,3 @@ def create_reply_keyboard(role):
 # домашнее задание
 # оценки, замечания, похвалы
 # напоминания
-

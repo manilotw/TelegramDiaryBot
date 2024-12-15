@@ -20,7 +20,6 @@ class Schoolkid(models.Model):
     """Ученик."""
     full_name = models.CharField('ФИО', max_length=200)
     birthday = models.DateField('День рождения', null=True)
-    entry_year = models.IntegerField('Год начала обучения', null=True)
     class_name = models.CharField('Класс', max_length=10, blank=True)  # Новое поле
     telegram_id = models.CharField('Telegram ID', max_length=100, default='', blank=True)
 
@@ -29,6 +28,14 @@ class Schoolkid(models.Model):
 
     def __str__(self):
         return f'{self.full_name} {self.class_name}'
+
+    class_group = models.ForeignKey(
+        'ClassGroup',
+        verbose_name='Класс',
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='students'
+    )
 
     class Meta:
         verbose_name = 'Ученик'
@@ -66,39 +73,37 @@ class Subject(models.Model):
         return self.title
 
 
+from django.db import models
+
 class Lesson(models.Model):
     """Один урок в расписании занятий."""
-    TIMESLOTS_SCHEDULE = [
-        '8:00-8:40',
-        '8:50-9:30',
-        '9:40-10:20',
-        '10:35-11:15',
-        '11:25-12:05'
-    ]
-    group_letter = models.CharField('Литера класса', max_length=1, db_index=True)
-    subject = models.ForeignKey(
-        Subject,
+
+    # Класс, которому назначен урок
+    class_group = models.ForeignKey(
+        'ClassGroup',
         null=True,
-        verbose_name='Предмет',
-        on_delete=models.CASCADE)
-    teacher = models.ForeignKey(
-        Teacher,
-        null=True,
-        verbose_name='Учитель',
-        on_delete=models.CASCADE)
-    timeslot = models.IntegerField(
-        'Слот',
-        db_index=True,
-        help_text='Номер слота в расписании уроков на этот день.')
-    room = models.CharField(
-        'Класс',
-        db_index=True,
-        max_length=50,
-        help_text='Класс где проходят занятия.')
-    date = models.DateField('Дата', db_index=True)
+        verbose_name='Класс',
+        on_delete=models.CASCADE
+    )
+
+    # Позволяет выбрать несколько предметов для урока
+    subjects = models.ManyToManyField(
+        'Subject',  # Ссылка на модель Subject, которая хранит предметы
+        verbose_name='Предметы',
+        related_name='lessons',
+        help_text='Предметы, которые будут изучаться на этом уроке.'
+    )
+
 
     def __str__(self):
-        return f'{self.subject.title} {self.group_letter}'
+        subject_titles = ', '.join([subject.title for subject in self.subjects.all()])
+        return f'{self.class_group} | {subject_titles}'
+
+    class Meta:
+        verbose_name = 'Урок'
+        verbose_name_plural = 'Уроки'
+
+
 
 
 class Mark(models.Model):
@@ -166,6 +171,25 @@ class Commendation(models.Model):
     def __str__(self):
         return f'{self.schoolkid.full_name}'
 
+class ClassGroup(models.Model):
+    """Модель для представления классов, например, 11А, 10Б."""
+    year = models.IntegerField('Год обучения')  # Например, 10, 11
+    letter = models.CharField('Литера', max_length=1)  # Например, А, Б
+    teacher = models.ForeignKey(
+        'Teacher',
+        verbose_name='Классный руководитель',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL
+    )
+
+    def __str__(self):
+        return f'{self.year}{self.letter}'
+
+    class Meta:
+        verbose_name = 'Класс'
+        verbose_name_plural = 'Классы'
+        unique_together = ('year', 'letter')  # Уникальность класса (например, 10А)
 
 class Homework(models.Model):
     """Домашнее задание."""
@@ -177,9 +201,11 @@ class Homework(models.Model):
         verbose_name='Предмет',
         on_delete=models.CASCADE
     )
-    group_letter = models.CharField(
-        'Литера класса',
-        max_length=1,
+    class_group = models.ForeignKey(
+        'ClassGroup',
+        verbose_name='Класс',
+        on_delete=models.CASCADE,
+        null=True,
         blank=True,
         help_text='Класс, которому назначено задание'
     )
@@ -192,8 +218,44 @@ class Homework(models.Model):
     )
 
     def __str__(self):
-        return f'{self.title} - {self.subject.title}'
+        return f'{self.title} - {self.subject.title} ({self.class_group})'
 
     class Meta:
         verbose_name = 'Домашнее задание'
         verbose_name_plural = 'Домашние задания'
+
+class Event(models.Model):
+    """Модель для представления события (мероприятия)."""
+    title = models.CharField(
+        'Название события',
+        max_length=200,
+        help_text='Краткое название мероприятия.'
+    )
+    description = models.TextField(
+        'Описание события',
+        blank=True,
+        help_text='Описание мероприятия, например, тематика или цель.'
+    )
+    datetime = models.DateTimeField(
+        'Дата и время',
+        help_text='Дата и время начала события.'
+    )
+    location = models.CharField(
+        'Место проведения',
+        max_length=200,
+        help_text='Где будет проходить мероприятие (например, актовый зал).'
+    )
+    class_group = models.ManyToManyField(
+        'ClassGroup',
+        verbose_name='Классы',
+        blank=True,
+        help_text='Классы, которые участвуют в мероприятии.'
+    )
+
+    def __str__(self):
+        return f'{self.title} | {self.datetime} | {self.location}'
+
+    class Meta:
+        verbose_name = 'Событие'
+        verbose_name_plural = 'События'
+        ordering = ['datetime']

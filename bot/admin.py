@@ -8,16 +8,19 @@ from .models import (
     Chastisement,
     Commendation,
     Parent,
-    Homework
+    Homework,
+    ClassGroup,
+    Event
+
 )
 
 
 @admin.register(Schoolkid)
 class SchoolkidAdmin(admin.ModelAdmin):
-    list_display = ('full_name', 'class_name', 'birthday', 'get_parent')
-    search_fields = ('full_name', 'class_name')
-    list_filter = ('class_name',)
-    ordering = ('class_name',)
+    list_display = ('full_name', 'class_group', 'birthday', 'get_parent')
+    search_fields = ('full_name', 'class_group__year', 'class_group__letter')
+    list_filter = ('class_group__year', 'class_group__letter')
+    ordering = ('class_group__year', 'class_group__letter', 'full_name')
 
     def get_parent(self, obj):
         return ", ".join([parent.full_name for parent in obj.parents.all()])
@@ -38,9 +41,14 @@ class SubjectAdmin(admin.ModelAdmin):
 
 @admin.register(Lesson)
 class LessonAdmin(admin.ModelAdmin):
-    list_display = ('subject', 'teacher', 'group_letter', 'date', 'timeslot', 'room')
-    search_fields = ('subject__title', 'teacher__full_name', 'room')
-    list_filter = ('group_letter', 'date', 'timeslot')
+    list_display = ('class_group', 'get_subjects')
+    search_fields = ('class_group', 'subjects__title')
+
+    def get_subjects(self, obj):
+        return ', '.join([subject.title for subject in obj.subjects.all()])
+    get_subjects.short_description = 'Предметы'
+
+    filter_horizontal = ('subjects', )  # This adds a horizontal filter for many-to-many fields
 
 
 @admin.register(Mark)
@@ -76,6 +84,33 @@ class ParentAdmin(admin.ModelAdmin):
 
 @admin.register(Homework)
 class HomeworkAdmin(admin.ModelAdmin):
-    list_display = ('title', 'subject', 'group_letter', 'due_date')
-    search_fields = ('title', 'subject__title', 'group_letter')
-    list_filter = ('due_date', 'group_letter')
+    """Админка для домашних заданий."""
+    list_display = ('title', 'subject', 'class_group', 'due_date')
+    search_fields = ('title', 'subject__title', 'class_group__year', 'class_group__letter')
+    list_filter = ('due_date', 'subject', 'class_group')
+
+    filter_horizontal = ('schoolkids',)  # Удобный выбор учеников через ManyToMany
+
+
+@admin.register(ClassGroup)
+class ClassGroupAdmin(admin.ModelAdmin):
+    """Админка для классов."""
+    list_display = ('year', 'letter', 'teacher', 'get_student_count')
+    search_fields = ('year', 'letter', 'teacher__full_name')
+    list_filter = ('year', 'letter')
+    ordering = ('year', 'letter')
+
+    def get_student_count(self, obj):
+        """Количество учеников в классе."""
+        return obj.students.count()
+    get_student_count.short_description = 'Количество учеников'
+
+@admin.register(Event)
+class EventAdmin(admin.ModelAdmin):
+    """Админка для модели Event (Событие)."""
+    list_display = ('title', 'datetime', 'location')
+    list_filter = ('datetime', 'location', 'class_group')
+    search_fields = ('title', 'location', 'class_group__year', 'class_group__letter')
+    ordering = ('datetime',)
+
+

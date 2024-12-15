@@ -11,8 +11,8 @@ django.setup()
 
 # Настройка Django
 # from .models import Schoolkid, Parent, Teacher, Subject, Lesson, Mark, Chastisement, Commendation
-from .utils import get_chastisements
-from .helpers import chastisements
+from .utils import get_chastisements, get_about_me, get_commendations, get_events, get_homework, get_marks, get_user_role
+from .helpers import chastisements, about_me, about_bot, lesson_schedule, homework, marks, commendations, create_reply_keyboard, events
 
 
 env = Env()
@@ -27,12 +27,43 @@ def main():
 
     @bot.message_handler(commands=['start'])
     def send(message):
-        bot.reply_to(message, 'Привет! Используй /chastisements для просмотра замечаний.')
+        keyboard = create_reply_keyboard(get_user_role(f'@{message.chat.username}'))
+        bot.reply_to(message, 'Hi', reply_markup=keyboard)
 
     @bot.message_handler(func=chastisements)
     def send_message(message):
-        print(message)
+
         result = get_chastisements(f'@{message.chat.username}')
+        bot.send_message(message.chat.id, result)
+
+    @bot.message_handler(func=homework)
+    def send_homework(message):
+
+        result = get_homework(f'@{message.chat.username}')
+        bot.send_message(message.chat.id, result)
+    
+    @bot.message_handler(func=about_bot)
+    def send_about_bot(message):
+
+        result = 'Адик и Амирж сделали бота ратата'
+        bot.send_message(message.chat.id, result)
+
+    @bot.message_handler(func=about_me)
+    def send_about_me(message):
+
+        result = get_about_me(f'@{message.chat.username}', get_user_role(f'@{message.chat.username}'))
+        bot.send_message(message.chat.id, result)
+
+    @bot.message_handler(func=marks)
+    def send_marks(message):
+
+        result = get_marks(f'@{message.chat.username}')
+        bot.send_message(message.chat.id, result)
+
+    @bot.message_handler(func=events)
+    def send_event(message):
+
+        result = get_events()
         bot.send_message(message.chat.id, result)
 
 if __name__ == "__main__":
